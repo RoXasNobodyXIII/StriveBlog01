@@ -93,28 +93,15 @@ export const AuthProvider = ({ children }) => {
   };
 
   const loginWithGoogle = () => {
-    try {
-      window.location.href = `${process.env.BACKEND_URL || 'http://localhost:3000'}/auth/google`;
-    } catch (error) {
-      console.error('Google login failed:', error);
-    }
+    window.location.href = 'http://localhost:3000/auth/google';
   };
 
   const loginWithGoogleCallback = async (token, user) => {
-    try {
-      if (!token || !user) {
-        throw new Error('Invalid OAuth callback data');
-      }
-      
-      setToken(token);
-      setUser(user);
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
-      return { success: true };
-    } catch (error) {
-      console.error('Google callback failed:', error);
-      return { success: false, error: error.message };
-    }
+    setToken(token);
+    setUser(user);
+    localStorage.setItem('token', token);
+    localStorage.setItem('user', JSON.stringify(user));
+    return { success: true };
   };
 
   const register = async (userData) => {
