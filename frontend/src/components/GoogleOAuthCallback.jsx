@@ -8,24 +8,33 @@ const GoogleOAuthCallback = () => {
   const { loginWithGoogleCallback } = useAuth();
 
   useEffect(() => {
-    navigate('/', { replace: true });
-
     const handleCallback = async () => {
-      const token = searchParams.get('token');
-      const userParam = searchParams.get('user');
+      try {
+        const token = searchParams.get('token');
+        const userParam = searchParams.get('user');
 
-      if (token && userParam) {
-        try {
-          const user = JSON.parse(decodeURIComponent(userParam));
-          await loginWithGoogleCallback(token, user);
-          console.log('User logged in successfully');
-        } catch (error) {
-          console.error('OAuth callback error:', error);
+        if (!token || !userParam) {
+          throw new Error('Missing OAuth callback parameters');
         }
+
+        const user = JSON.parse(decodeURIComponent(userParam));
+        const result = await loginWithGoogleCallback(token, user);
+        
+        if (result.success) {
+          navigate('/', { replace: true });
+        } else {
+          throw new Error(result.error);
+        }
+      } catch (error) {
+        console.error('OAuth callback error:', error);
+        navigate('/login', { 
+          replace: true,
+          state: { error: 'Google login failed. Please try again.' }
+        });
       }
     };
 
-    setTimeout(handleCallback, 100);
+    handleCallback();
   }, [searchParams, loginWithGoogleCallback, navigate]);
 
   return null;
